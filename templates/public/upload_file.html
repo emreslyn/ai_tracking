@@ -1,0 +1,45 @@
+{% extends "public/templates/public_template.html" %}
+
+{% block title %}Upload{% endblock %}
+
+{% block main %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+      <h1>Upload a file</h1>
+      <hr>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/">Home Page</a></li>
+            <li class="nav-item"><a class="nav-link" href="/upload-file">Upload File</a></li>
+            <li class="nav-item"><a class="nav-link" href="/monitor-results">Monitor Results</a></li>
+        </ul>
+      </nav>
+      <form action="/upload-file" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label>File</label>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" name="file" id="file">
+            <label class="custom-file-label" for="file">Choose File</label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload File</button>
+      </form>
+      <hr>
+      {% if error %}
+          <div class="alert alert-info" role="alert">
+              <strong>Message:</strong> {{ error }}
+          </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script>
+$(".custom-file-input").on("change", function() {
+  var fileName = $(this).val().split("\\").pop();
+  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+});
+</script>
+{% endblock %}

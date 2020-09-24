@@ -1,0 +1,42 @@
+{% extends "public/templates/public_template.html" %}
+
+{% block title %}Main Page{% endblock %}
+{% block main %}
+    <div class="container">
+      <div class="row">
+        <div class="col">
+            <h1>AI Tracking App</h1>
+            <hr>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/">Home Page</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/upload-file">Upload File</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/monitor-results">Monitor Results</a></li>
+                </ul>
+            </nav>
+            <br><br>
+            <div class="row">
+                <div class="col-md-4">
+                    <h2>Usage</h2>
+                    <p class="display-6">In order to upload python script click "Upload File" link from navigation bar.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h2>Features</h2>
+                    <ul>
+                        <li>Ability of tracking hardware consumption.</li>
+                        <li>Observing result of training visually.</li>
+                        <li>Running scripts o different servers.</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h2>Future Studies</h2>
+                    <li>...</li>
+                    <li>...</li>
+                    <li>...</li>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
