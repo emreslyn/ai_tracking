@@ -7,6 +7,9 @@ from subprocess import Popen
 import psutil
 from os import listdir
 from os.path import isfile, join
+import platform
+from datetime import datetime
+from systemInfo import SystemInfo
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -38,7 +41,6 @@ def upload_file():
             if file.filename == "":
                 print("\nNo filename\n")
                 error = "You should select file."
-                #return redirect(request.url, error=error)
             elif check_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config["FILE_UPLOADS"], filename))
@@ -46,11 +48,9 @@ def upload_file():
                 files[filename] = script
                 print("\nFile Saved.\n")
                 error = "You uploaded file successfully."
-                #return redirect(url_for("public/upload_file.html", error=error))
             else:
                 print("\nFile extension is not allowed.\n")
                 error = "File extension is not allowed."
-                #return redirect(request.url, error=error)
     return render_template("public/upload_file.html", error=error)
 
 @app.route("/monitor-results")
@@ -69,23 +69,16 @@ def run(filename):
     file = app.config["FILE_UPLOADS"] + "//" + filename
     Popen('python ' + file)
     files[filename].condition = "Invoked"
-    #
-    """
-    print("=" * 40, "CPU Info", "=" * 40)
-    # number of cores
-    print("Physical cores:", psutil.cpu_count(logical=False))
-    print("Total cores:", psutil.cpu_count(logical=True))
-    # CPU frequencies
-    cpufreq = psutil.cpu_freq()
-    print(f"Max Frequency: {cpufreq.max:.2f}Mhz")
-    print(f"Min Frequency: {cpufreq.min:.2f}Mhz")
-    print(f"Current Frequency: {cpufreq.current:.2f}Mhz")
-    # CPU usage
-    print("CPU Usage Per Core:")
-    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
-        print(f"Core {i}: {percentage}%")
-    print(f"Total CPU Usage: {psutil.cpu_percent()}%")
-    """
+    uname = platform.uname()
+    sys_name = uname.system
+    boot_time_timestamp = psutil.boot_time()
+    bt = datetime.fromtimestamp(boot_time_timestamp)
+    cpu_usage = psutil.cpu_percent()
+    freq = psutil.cpu_freq()
+    curr_freq = freq.current
+    print("Current Frequency: {} Mhz".format(freq.current))
+    sysInfo = SystemInfo(sys_name,bt,cpu_usage,curr_freq)
+    files[filename].sysInfo = sysInfo
     return render_template("public/monitor_results.html",files = files, servers = servers)
 
 @app.route("/monitor/<filename>")
