@@ -49,7 +49,12 @@
                             <!--<form> <!--action="/monitor/{{ file.file_name }}"
                                 <button type="submit" class="btn btn-secondary" data-toggle="modal" data-target="#SysInfo">Monitor</button>
                             </form>-->
-                            <button type="submit" class=" open-AddBookDialog btn btn-secondary" data-toggle="modal" data-target="#SysInfo" data-filename="{{ file.file_name }}" data-server="{{ file.server }}" data-condition="{{ file.condition }}">Monitor</button>
+                            <button type="submit" class=" open-AddBookDialog btn btn-secondary" data-toggle="modal"
+                                    data-target="#SysInfo" data-filename="{{ file.file_name }}" data-server="{{ file.server }}"
+                                    data-condition="{{ file.condition }}" data-sys_name="{{ file.sysInfo.sys_name }}" data-boot_time="{{ file.sysInfo.boot_time }}"
+                            data-cpu_usage="{{ file.sysInfo.cpu_usage }}" data-current_freq="{{ file.sysInfo.current_freq }}">
+                                Monitor
+                            </button>
                         </div>
                     </div>
                 </td>
@@ -84,18 +89,50 @@
       var msg1 = button.data('filename') // Extract info from data-* attributes
       var msg2 = button.data('server')
       var msg3 = button.data('condition')
+      var msg4 = button.data('sys_name')
+      var msg5 = button.data('boot_time')
+      var msg6 = button.data('cpu_usage')
+      var msg7 = button.data('current_freq')
       // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
       // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
       var modal = $(this)
-      modal.find('.modal-body').text(msg1 + " --- " + msg2 + " --- " + msg3)
+      // modal.find('.modal-body').text(msg1 + " --- " + msg2 + " --- " + msg3 + " --- " + msg4 + " --- " + msg5 + " --- " + msg6 + " --- " + msg7)
+      var p = "";
+            // CREATING DATA TO SHOW ON MODEL
+            p +=
+      "<p id='msg1' name='filename' >Script Name: "
+              + msg1 + " </p>";
+
+            p +=
+      "<p id='msg2' name='server' >Server Name: "
+              + msg2 + " </p>";
+              p +=
+      "<p id='msg3' name='condition' >Current Statu: "
+              + msg3 + " </p>";
+              p +=
+      "<p id='msg4' name='sys_name' >OS Name: "
+              + msg4 + " </p>";
+              p +=
+      "<p id='msg5' name='boot_time' >Boot Time: "
+              + msg5 + " </p>";
+              p +=
+      "<p id='msg6' name='cpu_usage' >CPU Usage: "
+              + msg6 + " </p>";
+              p +=
+      "<p id='msg7' name='current_freq' >Current Frequency: "
+              + msg7 + " MHz" + " </p>";
+            //CLEARING THE PREFILLED DATA
+            $("#body").empty();
+            //WRITING THE DATA ON MODEL
+            $("#body").append(p);
     });
 
-    $(document).on("click", ".open-AddBookDialog", function () {
+    /*$(document).on("click", ".open-AddBookDialog", function () {
      var filename = $(this).data('filename');
      $(".modal-body #body").val( filename );
      // As pointed out in comments,
      // it is unnecessary to have to manually call the modal.
      // $('#addBookDialog').modal('show');
-    });
+    });*/
 </script>
 {% endblock %}
