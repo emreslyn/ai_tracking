@@ -23,15 +23,19 @@
                 <th>Script</th>
                 <th>Server</th>
                 <th>Condition</th>
+                <th>Script Parameters</th>
                 <th>Action</th>
+                <th>Display</th>
             <tr>
         </thead>
         <tbody>
             {% for key, file in files.items() %}
+
             <tr>
+            <form action="/run/{{ file.file_name }}" method="POST">
                 <td>{{ file.file_name }}</td>
                 <td>
-                    <select name= colours method="GET" action="/">
+                    <select name= host method="GET" action="/">
                         {% for server in servers %}
                             <option value= "{{server}}" SELECTED>{{ server }}</option>"
                         {% endfor %}
@@ -39,23 +43,22 @@
                 </td>
                 <td>{{ file.condition }}</td>
                 <td>
-                    <div class="row">
-                        <div class="col-md-3">
-                            <form action="/run/{{ file.file_name }}">
-                                <button type="submit" class="btn btn-primary">Run</button>
-                            </form>
-                        </div>
-                        <div class="col-md-3">
-                            <!--<form> <!--action="/monitor/{{ file.file_name }}"
-                                <button type="submit" class="btn btn-secondary" data-toggle="modal" data-target="#SysInfo">Monitor</button>
-                            </form>-->
-                            <button type="submit" class=" open-AddBookDialog btn btn-secondary" data-toggle="modal"
-                                    data-target="#SysInfo" data-filename="{{ file.file_name }}" data-server="{{ file.server }}"
-                                    data-condition="{{ file.condition }}" data-sys_name="{{ file.sysInfo.sys_name }}" data-boot_time="{{ file.sysInfo.boot_time }}"
-                            data-cpu_usage="{{ file.sysInfo.cpu_usage }}" data-current_freq="{{ file.sysInfo.current_freq }}">
-                                Monitor
-                            </button>
-                        </div>
+                    <input type="text" placeholder="arg1 arg2 arg3 ..." name="params"></input>
+                </td>
+                <td>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Run</button>
+                    </div>
+                </td>
+                </form>
+                <td>
+                    <div>
+                        <button type="submit" class=" open-AddBookDialog btn btn-secondary" data-toggle="modal"
+                                data-target="#SysInfo" data-filename="{{ file.file_name }}" data-server="{{ file.server }}"
+                                data-condition="{{ file.condition }}" data-sys_name="{{ file.sysInfo.sys_name }}" data-boot_time="{{ file.sysInfo.boot_time }}"
+                        data-cpu_usage="{{ file.sysInfo.cpu_usage }}" data-current_freq="{{ file.sysInfo.current_freq }}">
+                            Monitor
+                        </button>
                     </div>
                 </td>
             </tr>
