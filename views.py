@@ -10,23 +10,22 @@ from os.path import isfile, join
 import platform
 from datetime import datetime
 from systemInfo import SystemInfo
+import utils
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 app.config["FILE_UPLOADS"] = "uploads"
 app.config["ALLOWED_FILE_EXTENSIONS"] = ["PY"]
+
+app.config["rmt_host"] = "ssh.itu.edu.tr"
+app.config["rmt_port"] = 22
+app.config["rmt_username"] = "isleyen16"
+app.config["rmt_password"] = "CuJiMtzpU2"
+
 app.secret_key = b'_5#y2L\n\xec]/'
 files = {}
 checkUploads = True
-servers = ["Apache","Tomcat","localhost"]
-def check_file(filename):
-    if not "." in filename:
-        return False
-    extension = filename.rsplit(".",1)[1]
-    if extension.upper() in app.config["ALLOWED_FILE_EXTENSIONS"]:
-        return True
-    else:
-        return False
+servers = ["SSH","localhost"]
 
 @app.route("/")
 def main_file():
@@ -41,7 +40,7 @@ def upload_file():
             if file.filename == "":
                 print("\nNo filename\n")
                 error = "You should select file."
-            elif check_file(file.filename):
+            elif utils.check_file(file.filename, app.config["ALLOWED_FILE_EXTENSIONS"]):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config["FILE_UPLOADS"], filename))
                 script = Script(file.filename,"localhost","Not Invoked")
@@ -64,10 +63,22 @@ def monitor_results():
         checkUploads = False
     return render_template("public/monitor_results.html", files = files, servers = servers)
 
-@app.route("/run/<filename>")
+@app.route("/run/<filename>", methods=["GET","POST"])
 def run(filename):
-    file = app.config["FILE_UPLOADS"] + "//" + filename
-    Popen('python ' + file)
+    server = request.form.get("host")
+    params = request.form.get("params")
+    print("params: {}".format(params))
+    if server == "SSH":
+        ssh = utils.connect_ssh(app.config["rmt_host"], app.config["rmt_port"], app.config["rmt_username"],app.config["rmt_password"])
+        utils.upload_file(ssh, os.path.join(app.config["FILE_UPLOADS"], filename), filename)
+        command = "cd /itu/s06d03/user_home/isleyen16/ai_tracking/ && python " + filename + " " + params
+        stdin, stdout, stderr = ssh.exec_command(command)
+        lines = stdout.readlines()
+        print(lines)
+        ssh.close()
+    else:
+        file = app.config["FILE_UPLOADS"] + "//" + filename
+        Popen('python ' + file + " " + params)
     files[filename].condition = "Invoked"
     uname = platform.uname()
     sys_name = uname.system
@@ -76,15 +87,9 @@ def run(filename):
     cpu_usage = psutil.cpu_percent()
     freq = psutil.cpu_freq()
     curr_freq = freq.current
-    print("Current Frequency: {} Mhz".format(freq.current))
     sysInfo = SystemInfo(sys_name,bt,cpu_usage,curr_freq)
     files[filename].sysInfo = sysInfo
     return render_template("public/monitor_results.html",files = files, servers = servers)
-
-@app.route("/monitor/<filename>")
-def monitor(filename):
-    print(filename)
-    return render_template("public/monitor.html")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
